@@ -20,6 +20,17 @@
         .email-item:hover{
             background-color: #eaeaea;
         }
+        #clear-button{
+            width: 100%;
+            background-color: indianred;
+            color: white;
+            border: none;
+            text-align: center;
+        }
+        #clear-button:hover{
+            background-color: darkred;
+        }
+
         </style>
 </head>
 <body>
@@ -48,6 +59,7 @@
     </div>
 
     <div id="list" class="pure-u-1">
+            <button id="clear-button"> Clear </button>
          {{range .dumps}}    
             <div class="email-item email-item-unread1 pure-g" style="cursor:pointer;" data-dump="{{.Value}}" onclick="document.getElementById('dumpArea').value = this.getAttribute('data-dump')">            
                 <div class="pure-u-3-4">
@@ -90,10 +102,15 @@
 </script>
 -->
 <script>
-    
+    document.getElementById("clear-button").onclick = clear;
     function setHeight(id){
         document.getElementById(id).style.height = window.innerHeight+'px';
     }
+
+    function clear(){
+        fetch(window.location.href, {method: 'delete'}).then((_ => location.reload()));
+    }
+
     setHeight("main")
     setHeight("e-content")
     setHeight("email-content-body")

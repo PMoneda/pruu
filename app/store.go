@@ -16,6 +16,14 @@ func Save(key string, c *gin.Context) {
 	}
 	_map[key] = append([]Dump{NewDump(c)} ,_map[key]...)
 }
+
+func Delete(key string, c *gin.Context) {
+	_, exist := _map[key]
+	if exist {
+		_map[key] = make([]Dump, 0, 0)
+	}
+}
+
 func FindByKey(key string) []Dump {
 	data, exist := _map[key]
 	if !exist {

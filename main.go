@@ -32,6 +32,14 @@ func main() {
 		})
 	})
 
+	router.DELETE("/dump/:key", func(c *gin.Context){
+		mutex.Lock()
+		defer mutex.Unlock()
+		k := c.Param("key")
+		app.Delete(k, c)
+		c.String(200, "OK")
+	})
+
 	router.POST("/dump/:key", func(c *gin.Context) {
 		mutex.Lock()
 		defer mutex.Unlock()
