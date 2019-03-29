@@ -13,7 +13,9 @@ var mutex sync.Mutex
 
 func main() {
 	port := os.Getenv("PORT")
-	//port := "8080"
+	if(port == ""){
+		port = "8080"
+	}
 	router := gin.Default()
 	router.Static("/assets", "./assets")
 	router.LoadHTMLGlob("templates/*.tmpl.html")
