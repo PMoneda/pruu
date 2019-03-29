@@ -14,7 +14,7 @@ func Save(key string, c *gin.Context) {
 	if !exist {
 		_map[key] = make([]Dump, 0, 0)
 	}
-	_map[key] = append(_map[key], NewDump(c))
+	_map[key] = append([]Dump{NewDump(c)} ,_map[key]...)
 }
 func FindByKey(key string) []Dump {
 	data, exist := _map[key]

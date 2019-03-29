@@ -1,4 +1,4 @@
-package: github.com/PMoneda/pigeon
+package: github.com/PMoneda/pruu
 import:
 - package: github.com/gin-gonic/gin
   version: ~1.2.0
