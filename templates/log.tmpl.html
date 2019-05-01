@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pruu a HTTP dump tool and request simulator">
+    <title>Pruu</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">
+    
+    
+    
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="css/layouts/email-old-ie.css">
+        <![endif]-->
+        <!--[if gt IE 8]><!-->
+            <link rel="stylesheet" href="/assets/css/layouts/log.css">
+        <!--<![endif]-->
+        <style>
+        
+        #clear-button{
+            width: 100%;
+            background-color: indianred;
+            color: white;
+            border: none;
+            text-align: center;
+        }
+        #clear-button:hover{
+            background-color: darkred;
+        }
+        .logDisplay {            
+            color:white;
+            margin:0px;
+        }
+
+        </style>
+</head>
+<body class="bckColor">
+<div class="topo">
+    <img src="/assets/img/common/4866-200.png" width="40px"/>
+</div>
+<div>
+    <p class="logDisplay">
+    {{range .logs}}    
+        <span class="text date">{{.CreatedAt.Format "2006-01-02T15:04:05"}}</span>&nbsp;
+        <span class="text level-{{.Level}}">{{.Level}}</span>&nbsp;
+        {{ range $key, $value := .Tags }}
+            <span class="text tag">{{ $key }}={{ $value }}</span>
+        {{ end }}
+        <span class="text message">{{.Value}}</span><br/>
+    {{end}}
+    </p>
+</div>
+</div>
+<!--
+<script src="https://yui-s.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+<script>
+    YUI().use('node-base', 'node-event-delegate', function (Y) {
+
+        var menuButton = Y.one('.nav-menu-button'),
+            nav        = Y.one('#nav');
+
+        // Setting the active class name expands the menu vertically on small screens.
+        menuButton.on('click', function (e) {
+            nav.toggleClass('active');
+        });
+
+        // Your application code goes here...
+
+    });
+</script>
+-->
+<script>
+    document.getElementById("clear-button").onclick = clear;
+    function setHeight(id){
+        document.getElementById(id).style.height = window.innerHeight+'px';
+    }
+
+    function clear(){
+        fetch(window.location.href, {method: 'delete'}).then((_ => location.reload()));
+    }
+
+    setHeight("main")
+    setHeight("e-content")
+    setHeight("email-content-body")
+    setHeight("dumpArea")
+    
+</script>
+
+
+
+</body>
+</html>

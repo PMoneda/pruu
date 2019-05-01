@@ -1,0 +1,55 @@
+.topo{
+    width:100%;    
+    padding:5px;
+    background-color: #335792;
+    box-sizing: border-box
+
+}
+
+.text {
+    font-size: 12px;
+    font-family: monospace;
+}
+.date{
+   color:#5d5d5d;
+}
+.date:hover{
+    color:#f57300;
+}
+.tag{
+    color:#f57300;
+}
+.bckColor{
+    background-color: #28292b;
+}
+
+.level-INFO{
+    color:blue;
+}
+
+.level-INF{
+    color:blue;
+}
+
+.level-DEBUG{
+    color:greenyellow;
+}
+
+.level-DBG{
+    color:greenyellow;
+}
+
+.level-WARNING{
+    color:yellow;
+}
+
+.level-WARN{
+    color:yellow;
+}
+
+.level-ERROR{
+    color:red;
+}
+.level-CRITICAL{
+    color:red;
+}

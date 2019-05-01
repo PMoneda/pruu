@@ -5,7 +5,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/PMoneda/pruu/app"
+	"github.com/PMoneda/pruu/dump"
+	"github.com/PMoneda/pruu/logging"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +29,13 @@ func main() {
 
 	router.GET("/dump/:key", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", gin.H{
-			"dumps": app.FindByKey(c.Param("key")),
+			"dumps": dump.FindByKey(c.Param("key")),
+		})
+	})
+
+	router.GET("/log/:key", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "log.tmpl.html", gin.H{
+			"logs": logging.FindByKey(c.Param("key")),
 		})
 	})
 
@@ -36,7 +43,7 @@ func main() {
 		mutex.Lock()
 		defer mutex.Unlock()
 		k := c.Param("key")
-		app.Delete(k, c)
+		dump.Delete(k, c)
 		c.String(200, "OK")
 	})
 
@@ -44,13 +51,22 @@ func main() {
 		mutex.Lock()
 		defer mutex.Unlock()
 		k := c.Param("key")
-		app.Save(k, c)
+		dump.Save(k, c)
 		c.String(200, "OK")
 	})
 
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "main.tmpl.html", nil)
 	})
+
+	router.POST("/log/:key", func(c *gin.Context) {
+		mutex.Lock()
+		defer mutex.Unlock()
+		k := c.Param("key")
+		logging.Save(k, c)
+		c.String(200, "OK")
+	})
+	
 
 	router.Run(":" + port)
 }

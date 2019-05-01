@@ -1,7 +1,0 @@
-package: github.com/PMoneda/pruu
-import:
-- package: github.com/gin-gonic/gin
-  version: ~1.2.0
-- package: github.com/gin-contrib/sse
-- package: github.com/satori/go.uuid
-  version: ~1.1.0
