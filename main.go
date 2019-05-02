@@ -21,6 +21,18 @@ func main() {
 	router.Static("/assets", "./assets")
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 
+	router.PATCH("/log/:key", func(c *gin.Context) {
+		
+		k := c.Param("key")
+		list := logging.FindByKey(k)
+		if len(list) > 0 {
+			c.JSON(200, list[len(list)-1])
+		}else{
+			c.String(404,"not found")
+		}
+		
+	})
+
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
@@ -47,6 +59,14 @@ func main() {
 		c.String(200, "OK")
 	})
 
+	router.DELETE("/log/:key", func(c *gin.Context){
+		mutex.Lock()
+		defer mutex.Unlock()
+		k := c.Param("key")
+		logging.Delete(k, c)
+		c.String(200, "OK")
+	})
+
 	router.POST("/dump/:key", func(c *gin.Context) {
 		mutex.Lock()
 		defer mutex.Unlock()
@@ -66,6 +86,8 @@ func main() {
 		logging.Save(k, c)
 		c.String(200, "OK")
 	})
+
+	
 	
 
 	router.Run(":" + port)

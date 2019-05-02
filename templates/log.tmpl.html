@@ -20,14 +20,12 @@
         
         #clear-button{
             width: 100%;
-            background-color: indianred;
+            background-color: #095da5;
             color: white;
             border: none;
             text-align: center;
         }
-        #clear-button:hover{
-            background-color: darkred;
-        }
+        
         .logDisplay {            
             color:white;
             margin:0px;
@@ -38,9 +36,11 @@
 <body class="bckColor">
 <div class="topo">
     <img src="/assets/img/common/4866-200.png" width="40px"/>
+    
 </div>
 <div>
-    <p class="logDisplay">
+    <button id="clear-button">Delete logs</button>
+    <p id="logs" class="logDisplay">
     {{range .logs}}    
         <span class="text date">{{.CreatedAt.Format "2006-01-02T15:04:05"}}</span>&nbsp;
         <span class="text level-{{.Level}}">{{.Level}}</span>&nbsp;
@@ -52,38 +52,21 @@
     </p>
 </div>
 </div>
-<!--
-<script src="https://yui-s.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+
 <script>
-    YUI().use('node-base', 'node-event-delegate', function (Y) {
-
-        var menuButton = Y.one('.nav-menu-button'),
-            nav        = Y.one('#nav');
-
-        // Setting the active class name expands the menu vertically on small screens.
-        menuButton.on('click', function (e) {
-            nav.toggleClass('active');
-        });
-
-        // Your application code goes here...
-
-    });
-</script>
--->
-<script>
-    document.getElementById("clear-button").onclick = clear;
-    function setHeight(id){
-        document.getElementById(id).style.height = window.innerHeight+'px';
-    }
+    document.getElementById("clear-button").onclick = clear;    
 
     function clear(){
-        fetch(window.location.href, {method: 'delete'}).then((_ => location.reload()));
+        console.log("Bla")
+        fetch(window.location.href, {method: 'DELETE'}).then((_ => location.reload()));
     }
+    function createElementFromHTML(htmlString) {
+        var div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
 
-    setHeight("main")
-    setHeight("e-content")
-    setHeight("email-content-body")
-    setHeight("dumpArea")
+        // Change this to div.childNodes to support multiple top-level nodes
+        return div.children; 
+    }
     
 </script>
 

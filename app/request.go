@@ -31,7 +31,8 @@ type Dump struct {
 
 //Message stores a basic string struct
 type Message struct {
-	CreatedAt time.Time `json:"created_at"`	
+	CreatedAt time.Time `json:"created_at"`
+	CreatedAtStr string `json:"date_format"`	
 	Value     string    `json:"value"`
 	Level string 		`json:"level"`
 	Tags url.Values	    `json:"tags"`
@@ -44,10 +45,12 @@ func NewMessage(c *gin.Context) Message {
 	level := strings.ToUpper(c.Query("level"))
 	values := c.Request.URL.Query()
 	values.Del("level")
+	now := time.Now()
+	nowStr := now.Format("2006-01-02T15:04:05")
 	if err != nil {
-		return Message{CreatedAt:time.Now(),Value:err.Error()}
+		return Message{CreatedAtStr:nowStr, CreatedAt:now,Value:err.Error()}
 	}
-	return Message{Tags:values, Level:level,CreatedAt:time.Now(),Value:string(stream)}
+	return Message{CreatedAtStr:nowStr,Tags:values, Level:level,CreatedAt:now,Value:string(stream)}
 }
 
 //NewDump from request
