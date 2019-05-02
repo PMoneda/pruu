@@ -1,6 +1,9 @@
 package app
 
 import (
+	"net/url"
+	"strings"
+	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
 	"time"
@@ -24,6 +27,30 @@ type Dump struct {
 	Method    string    `json:"method"`
 	BodySize  int64     `json:"body_size"`
 	URI       string    `json:"uri"`
+}
+
+//Message stores a basic string struct
+type Message struct {
+	CreatedAt time.Time `json:"created_at"`
+	CreatedAtStr string `json:"date_format"`	
+	Value     string    `json:"value"`
+	Level string 		`json:"level"`
+	Tags url.Values	    `json:"tags"`
+}
+
+func NewMessage(c *gin.Context) Message {
+	buf := new(bytes.Buffer)
+	_ , err := buf.ReadFrom(c.Request.Body)
+	stream := buf.String()
+	level := strings.ToUpper(c.Query("level"))
+	values := c.Request.URL.Query()
+	values.Del("level")
+	now := time.Now()
+	nowStr := now.Format("2006-01-02T15:04:05")
+	if err != nil {
+		return Message{CreatedAtStr:nowStr, CreatedAt:now,Value:err.Error()}
+	}
+	return Message{CreatedAtStr:nowStr,Tags:values, Level:level,CreatedAt:now,Value:string(stream)}
 }
 
 //NewDump from request
