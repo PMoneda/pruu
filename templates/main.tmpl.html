@@ -59,6 +59,16 @@
         Use Pruu to see what your HTTP client is sending or to inspect and test webhook requests.
     </p>
     <br/>
+    <p style="padding:20px;font-size: 20px;font-weight: bold;">New Feature!</p>
+    <p>Post Log messages on Pruu! Now is easily to centralize log messages for your development environment</p>
+    <p id="doc" style="text-align:left;">
+        <b>POST</b> https://pruu.herokuapp.com/log/<b>:id</b>?level=DEBUG&mytag=value1 <b>to send a log message on request body</b>
+    </p>
+    <br/>
+    <p id="doc" style="text-align:left;">
+        <b>GET</b>  https://pruu.herokuapp.com/log/<b>:id</b> to view your log messages
+    </p>
+    <br/>
     <p id="doc" style="text-align:left;">
         <b>POST</b> https://pruu.herokuapp.com/dump/<b>:id</b> to sending request
     </p>
@@ -71,15 +81,7 @@
         <b>CURL</b>  curl -X POST https://pruu.herokuapp.com/dump/<b>:id</b> -d <i>'{...}'</i>
     </p>
     <br/> 
-    <p style="padding:20px;font-size: 20px;font-weight: bold;">New Feature!</p>
-    <p>Post Log messages on Pruu! Now is easily to centralize log messages for your development environment</p>
-    <p id="doc" style="text-align:left;">
-        <b>POST</b> https://pruu.herokuapp.com/log/<b>:id</b>?level=DEBUG&mytag=value1 <b>to send a log message on request body</b>
-    </p>
-    <br/>
-    <p id="doc" style="text-align:left;">
-        <b>GET</b>  https://pruu.herokuapp.com/log/<b>:id</b> to view your log messages
-    </p>   
+       
 </div>
 
 </body>

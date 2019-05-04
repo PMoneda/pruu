@@ -1,3 +1,7 @@
+* {
+    /* So 100% means 100% */
+    box-sizing: border-box;
+}
 .topo{
     width:100%;    
     padding:5px;
@@ -52,4 +56,93 @@
 }
 .level-CRITICAL{
     color:red;
+}
+
+
+.menu-bar{
+    width: 100%;
+    background-color: #4c4c4c;
+    color: white;
+    border: none;
+    text-align: center;
+    box-shadow: 1px 1px 5px inset #000;
+    
+    text-align: left;
+    box-sizing: border-box;
+    overflow: hidden;    
+    transition: height 0.3s;
+}
+
+.menu-bar > button {
+    background-color: transparent;
+    border:2px solid #000;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 12px;
+    box-shadow: #000;
+    margin:8px;    
+}
+
+.menu-bar > button:hover{
+    background-color: #28292b;
+}
+
+.button-debug {
+    border-color: #01ff01 !important;
+    color: #01ff01;
+}
+
+.button-warn {
+    border-color: orange !important;
+    color: orange;
+}
+
+.button-error {
+    border-color: red !important;
+    color: red;
+}
+
+.button-info {
+    border-color: #00b8ff !important;
+    color:#00b8ff
+}
+
+button:focus, textarea {
+    outline: none !important;
+}
+
+.open-menu{
+    width: 100%;
+    text-align: center;
+}
+
+.open-menu-button {
+    width: 60px;
+    height: 15px;
+    text-align: center;
+    margin:auto;
+    background-color: #335792;
+    font-size: 12px;
+    cursor: pointer;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0px 4px 5px #000;
+    color:white;
+}
+
+.footer{
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 60px;
+    background-color: #4c4c4c;
+    box-shadow: 2px 2px 5px inset;
+
+}
+
+.logDisplay{
+    color:white;
+    margin:0px;
+    margin-bottom: 10px;
 }

@@ -6,32 +6,8 @@
     <meta name="description" content="Pruu a HTTP dump tool and request simulator">
     <title>Pruu</title>
     
-    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">
-    
-    
-    
-        <!--[if lte IE 8]>
-            <link rel="stylesheet" href="css/layouts/email-old-ie.css">
-        <![endif]-->
-        <!--[if gt IE 8]><!-->
-            <link rel="stylesheet" href="/assets/css/layouts/log.css">
-        <!--<![endif]-->
-        <style>
-        
-        #clear-button{
-            width: 100%;
-            background-color: #095da5;
-            color: white;
-            border: none;
-            text-align: center;
-        }
-        
-        .logDisplay {            
-            color:white;
-            margin:0px;
-        }
-
-        </style>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">        
+    <link rel="stylesheet" href="/assets/css/layouts/log.css">
 </head>
 <body class="bckColor">
 <div class="topo">
@@ -39,33 +15,146 @@
     
 </div>
 <div>
-    <button id="clear-button">Delete logs</button>
-    <p id="logs" class="logDisplay">
+    <div id="menu" class="menu-bar" style="height: 0px;">
+        <button onclick="filter('DEBUG')" class="button-debug">DEBUG</button>
+        <button  onclick="filter('INFO')" class="button-info">INFO</button>
+        <button  onclick="filter('WARN')" class="button-warn">WARN</button>
+        <button  onclick="filter('ERROR')" class="button-error">ERROR</button>
+        <button id="clear-button">DELETE</button>
+    </div>
+    <div class="open-menu">
+        <div id="btnOpenMenu" class="open-menu-button">menu</div>
+    </div>
+    
+    <div id="logs" class="logDisplay">
+    
     {{range .logs}}    
-        <span class="text date">{{.CreatedAt.Format "2006-01-02T15:04:05"}}</span>&nbsp;
-        <span class="text level-{{.Level}}">{{.Level}}</span>&nbsp;
-        {{ range $key, $value := .Tags }}
-            <span class="text tag">{{ $key }}={{ $value }}</span>
-        {{ end }}
-        <span class="text message">{{.Value}}</span><br/>
+        <div data-id="{{.ID}}" class="log-line" data-level="{{.Level}}">
+            <span class="text date">{{.CreatedAt.Format "2006-01-02T15:04:05"}}</span>&nbsp;
+            <span class="text level-{{.Level}}">{{.Level}}</span>&nbsp;
+            {{ range $key, $value := .Tags }}
+                <span class="text tag">{{ $key }}={{ $value }}</span>
+            {{ end }}
+            <span class="text message">{{.Value}}</span>
+        </div>        
     {{end}}
-    </p>
+    </div>    
+    
 </div>
+
 </div>
 
 <script>
-    document.getElementById("clear-button").onclick = clear;    
-
-    function clear(){
-        console.log("Bla")
+    document.getElementById("clear-button").onclick = clear;
+    document.getElementById("btnOpenMenu").onclick = function (){
+        var menu = document.getElementById("menu");
+        if(menu.style.height === "0px"){
+            menu.style.height = "60px"
+        }else{
+            menu.style.height = "0px"
+        }
+    }
+    
+    
+    var logView = document.getElementById("logs")
+    function clear(){        
         fetch(window.location.href, {method: 'DELETE'}).then((_ => location.reload()));
     }
     function createElementFromHTML(htmlString) {
-        var div = document.createElement('div');
+        var div = document.createElement('div');        
         div.innerHTML = htmlString.trim();
 
         // Change this to div.childNodes to support multiple top-level nodes
-        return div.children; 
+        return div.children;
+    }
+    var emptyCount = 0
+    var tickTimeout = null
+    var tickStep = 300
+    const baseTimeout = 1000
+    function schedule(callback){
+        clearTimeout(tickTimeout)
+        tickTimeout = setTimeout(callback,baseTimeout + emptyCount)
+    }
+
+    function loadData(){
+        var id = 0;
+        if(logView.children.length > 0){
+            var last = logView.children[logView.children.length-1]
+            id = parseInt(last.getAttribute("data-id")) + 1;
+        }        
+        const url = window.location.protocol+"//"+window.location.host+"/json"+window.location.pathname+"?offset="+id
+        try{
+            var fetchProm = fetch(url, {method: 'GET'})
+            fetchProm.catch(x => {
+                location.reload()
+            })
+            fetchProm.then((x => {        
+            x.json().then(list =>{
+                if(list.length === 0){
+                    emptyCount += tickStep
+                    if(emptyCount > 60000){
+                        emptyCount = 60000;//max wait
+                    }
+                    setTimeout(()=>{
+                        console.log(`next tick on ${(baseTimeout+emptyCount)/1000}s`)
+                        schedule(loadData)
+                    },1)
+                    
+                    return;
+                }
+                emptyCount = 0;
+                var tmpl = list.map(l => `
+                <div data-id="${l.id}" class="log-line" data-level="${l.level}">
+                    <span class="text date">${l.created_at}</span>&nbsp;
+                    <span class="text level-${l.level}">${l.level}</span>&nbsp;
+                    ${Object.keys(l.tags).map(k => `<span class="text tag">${k}=[${l.tags[k].join(" ")}]</span>`)}                    
+                    <span class="text message">${l.value}</span>
+                </div>  
+                `)
+                var el = createElementFromHTML(tmpl.join(" "))
+                for(var i=0; i<el.length;i++){
+                    logView.appendChild(el[i])
+                }                
+                
+                setTimeout(()=>{
+                    window.scrollTo(0,document.body.scrollHeight);
+                    schedule(loadData)
+                },1)
+            })
+        }))
+        }catch(e){
+            location.reload()
+        }
+        
+    }
+
+
+    schedule(loadData)
+    var filtered = {}
+    function filter(level){           
+        if(filtered[level]){
+            delete filtered[level]
+            //remove filter
+            var toHide = document.querySelectorAll(`.log-line`)
+            for(var i=0;i<toHide.length;i++){
+                toHide[i].style.display = "";
+            }
+            
+            return;    
+        }else{
+            filtered={};
+        }
+        
+        
+        filtered[level] = true;
+        var toHide = document.querySelectorAll(`.log-line`)
+        for(var i=0;i<toHide.length;i++){
+            toHide[i].style.display = "none";
+        }
+        var toHide = document.querySelectorAll(`.log-line[data-level=${level}]`)
+        for(var i=0;i<toHide.length;i++){
+            toHide[i].style.display = "";
+        }
     }
     
 </script>
