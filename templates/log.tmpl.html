@@ -6,32 +6,8 @@
     <meta name="description" content="Pruu a HTTP dump tool and request simulator">
     <title>Pruu</title>
     
-    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">
-    
-    
-    
-        <!--[if lte IE 8]>
-            <link rel="stylesheet" href="css/layouts/email-old-ie.css">
-        <![endif]-->
-        <!--[if gt IE 8]><!-->
-            <link rel="stylesheet" href="/assets/css/layouts/log.css">
-        <!--<![endif]-->
-        <style>
-        
-        #clear-button{
-            width: 100%;
-            background-color: #095da5;
-            color: white;
-            border: none;
-            text-align: center;
-        }
-        
-        .logDisplay {            
-            color:white;
-            margin:0px;
-        }
-
-        </style>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">        
+    <link rel="stylesheet" href="/assets/css/layouts/log.css">
 </head>
 <body class="bckColor">
 <div class="topo">
@@ -39,7 +15,17 @@
     
 </div>
 <div>
-    <button id="clear-button">Delete logs</button>
+    <div id="menu" class="menu-bar" style="height: 0px;">
+        <button onclick="filter('DEBUG')" class="button-debug">DEBUG</button>
+        <button  onclick="filter('INFO')" class="button-info">INFO</button>
+        <button  onclick="filter('WARN')" class="button-warn">WARN</button>
+        <button  onclick="filter('ERROR')" class="button-error">ERROR</button>
+        <button id="clear-button">DELETE</button>
+    </div>
+    <div class="open-menu">
+        <div id="btnOpenMenu" class="open-menu-button">menu</div>
+    </div>
+    
     <div id="logs" class="logDisplay">
     
     {{range .logs}}    
@@ -52,12 +38,24 @@
             <span class="text message">{{.Value}}</span>
         </div>        
     {{end}}
-    </div>
+    </div>    
+    
 </div>
+
 </div>
 
 <script>
     document.getElementById("clear-button").onclick = clear;
+    document.getElementById("btnOpenMenu").onclick = function (){
+        var menu = document.getElementById("menu");
+        if(menu.style.height === "0px"){
+            menu.style.height = "60px"
+        }else{
+            menu.style.height = "0px"
+        }
+    }
+    
+    
     var logView = document.getElementById("logs")
     function clear(){        
         fetch(window.location.href, {method: 'DELETE'}).then((_ => location.reload()));
@@ -94,8 +92,8 @@
             x.json().then(list =>{
                 if(list.length === 0){
                     emptyCount += tickStep
-                    if(emptyCount > 15000){
-                        emptyCount = 15000;//max wait
+                    if(emptyCount > 60000){
+                        emptyCount = 60000;//max wait
                     }
                     setTimeout(()=>{
                         console.log(`next tick on ${(baseTimeout+emptyCount)/1000}s`)
@@ -119,6 +117,7 @@
                 }                
                 
                 setTimeout(()=>{
+                    window.scrollTo(0,document.body.scrollHeight);
                     schedule(loadData)
                 },1)
             })
@@ -131,7 +130,32 @@
 
 
     schedule(loadData)
-
+    var filtered = {}
+    function filter(level){           
+        if(filtered[level]){
+            delete filtered[level]
+            //remove filter
+            var toHide = document.querySelectorAll(`.log-line`)
+            for(var i=0;i<toHide.length;i++){
+                toHide[i].style.display = "";
+            }
+            
+            return;    
+        }else{
+            filtered={};
+        }
+        
+        
+        filtered[level] = true;
+        var toHide = document.querySelectorAll(`.log-line`)
+        for(var i=0;i<toHide.length;i++){
+            toHide[i].style.display = "none";
+        }
+        var toHide = document.querySelectorAll(`.log-line[data-level=${level}]`)
+        for(var i=0;i<toHide.length;i++){
+            toHide[i].style.display = "";
+        }
+    }
     
 </script>
 
