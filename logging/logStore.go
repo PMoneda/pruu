@@ -18,6 +18,9 @@ func Save(key string, c *gin.Context) {
 	msg := app.NewMessage(c)
 	msg.ID = len(_map[key])
 	_map[key] = append(_map[key], msg)
+	if len(_map[key]) > 5000 {
+		_map[key] = _map[key][1:]
+	}
 }
 
 func Delete(key string) {
