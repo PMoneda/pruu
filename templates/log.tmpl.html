@@ -67,6 +67,7 @@
     }
 
     function resume(){
+        window.scrollTo(0,document.body.scrollHeight);
         schedule(loadData)
         const btn = document.getElementById("pause-button");
         btn.innerHTML = "Pause";
@@ -143,8 +144,7 @@
                                 
                 
                 setTimeout(()=>{                    
-                    //window.scrollTo(0,document.body.scrollHeight);
-                    //isso aqui mantem o scroll
+                  
                     schedule(loadData)
                 },1)
             })
