@@ -148,7 +148,7 @@ button:focus, textarea {
 }
 
 .new_logs{
-    position: absolute;
+    position: fixed;
     right: 20px;
     background-color: #3e3e3e;
     color: white;

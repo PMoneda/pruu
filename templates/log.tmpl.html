@@ -63,10 +63,10 @@
         //clearTimeout(tickTimeout)
         const btn = document.getElementById("pause-button");
         btn.innerHTML = "Resume";
-        btn.onclick = resume;
+        btn.onclick = resume;        
     }
 
-    function resume(){
+    function resume(){        
         window.scrollTo(0,document.body.scrollHeight);
         schedule(loadData)
         const btn = document.getElementById("pause-button");
