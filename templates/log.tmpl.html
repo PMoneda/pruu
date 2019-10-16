@@ -21,6 +21,7 @@
         <button  onclick="filter('WARN')" class="button-warn">WARN</button>
         <button  onclick="filter('ERROR')" class="button-error">ERROR</button>
         <button id="clear-button">DELETE</button>
+        <button id="pause-button">Pause</button>
     </div>
     <div class="open-menu">
         <div id="btnOpenMenu" class="open-menu-button">menu</div>
@@ -39,13 +40,16 @@
         </div>        
     {{end}}
     </div>    
-    
+    <div id="new_logs_notification" class="new_logs" onclick="resume()">
+        <p onclick="resume()"></p>
+    </div>
 </div>
 
 </div>
 
 <script>
     document.getElementById("clear-button").onclick = clear;
+    document.getElementById("pause-button").onclick = pause;
     document.getElementById("btnOpenMenu").onclick = function (){
         var menu = document.getElementById("menu");
         if(menu.style.height === "0px"){
@@ -55,6 +59,19 @@
         }
     }
     
+    function pause(){
+        //clearTimeout(tickTimeout)
+        const btn = document.getElementById("pause-button");
+        btn.innerHTML = "Resume";
+        btn.onclick = resume;
+    }
+
+    function resume(){
+        schedule(loadData)
+        const btn = document.getElementById("pause-button");
+        btn.innerHTML = "Pause";
+        btn.onclick = pause;
+    }
     
     var logView = document.getElementById("logs")
     function clear(){        
@@ -103,21 +120,31 @@
                     return;
                 }
                 emptyCount = 0;
-                var tmpl = list.map(l => `
-                <div data-id="${l.id}" class="log-line" data-level="${l.level}">
-                    <span class="text date">${l.created_at}</span>&nbsp;
-                    <span class="text level-${l.level}">${l.level}</span>&nbsp;
-                    ${Object.keys(l.tags).map(k => `<span class="text tag">${k}=[${l.tags[k].join(" ")}]</span>`)}                    
-                    <span class="text message">${l.value}</span>
-                </div>  
-                `)
-                var el = createElementFromHTML(tmpl.join(" "))
-                for(var i=0; i<el.length;i++){
-                    logView.appendChild(el[i])
-                }                
+                const btn = document.getElementById("pause-button");
+                const not = document.querySelector("#new_logs_notification > p");
+                if(btn.innerHTML === "Pause"){
+                    not.innerHTML = ""
+                    var tmpl = list.map(l => `
+                    <div data-id="${l.id}" class="log-line" data-level="${l.level}">
+                        <span class="text date">${l.created_at}</span>&nbsp;
+                        <span class="text level-${l.level}">${l.level}</span>&nbsp;
+                        ${Object.keys(l.tags).map(k => `<span class="text tag">${k}=[${l.tags[k].join(" ")}]</span>`)}                    
+                        <span class="text message">${l.value}</span>
+                    </div>  
+                    `)
+                    var el = createElementFromHTML(tmpl.join(" "))
+                    for(var i=0; i<el.length;i++){
+                        logView.appendChild(el[i])
+                    }
+                }else{
+                    
+                    not.innerHTML = list.length +  " new messages"
+                }
+                                
                 
-                setTimeout(()=>{
-                    window.scrollTo(0,document.body.scrollHeight);
+                setTimeout(()=>{                    
+                    //window.scrollTo(0,document.body.scrollHeight);
+                    //isso aqui mantem o scroll
                     schedule(loadData)
                 },1)
             })
