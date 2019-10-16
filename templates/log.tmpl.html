@@ -48,6 +48,7 @@
 
 <script>
     const logs = document.getElementById('logs');
+    const not = document.querySelector("#new_logs_notification > p");
     document.getElementById("clear-button").onclick = clear;    
     document.getElementById("btnOpenMenu").onclick = function (){
         var menu = document.getElementById("menu");
@@ -61,7 +62,8 @@
     var count = 0;
     function resume(){        
         count = 0;
-        window.scrollTo(0,document.body.scrollHeight);        
+        window.scrollTo(0,document.body.scrollHeight);
+        not.innerHTML = ""        
     }
     
     var logView = document.getElementById("logs")
@@ -110,10 +112,7 @@
                     
                     return;
                 }
-                emptyCount = 0;
-                const btn = document.getElementById("pause-button");
-                const not = document.querySelector("#new_logs_notification > p");
-                
+                emptyCount = 0;                                               
                 not.innerHTML = ""
                 var tmpl = list.map(l => `
                 <div data-id="${l.id}" class="log-line" data-level="${l.level}">
