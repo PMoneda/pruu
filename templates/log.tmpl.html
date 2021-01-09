@@ -56,21 +56,31 @@
 </div>
 
 <script>
+    var socketUrl = "ws://"+window.location.host+"/ws"+window.location.pathname;
+    function onReceive(message){
+        let msg = JSON.parse(message.data);
+        var tmpl = [msg].map(l => `
+        <div data-id="${l.id}" class="log-line" data-level="${l.level}">
+            <span class="text date">${l.created_at}</span>&nbsp;
+            <span class="text level-${l.level}">${l.level}</span>&nbsp;
+            ${Object.keys(l.tags).map(k => `<span class="text tag">${k}=[${l.tags[k].join(" ")}]</span>`)}
+            <span class="text message">${l.value}</span>
+        </div>  
+        `)
+        var el = createElementFromHTML(tmpl.join(" "))
+        logView.appendChild(el[0])
+    }
 
-var socket = new WebSocket("ws://"+window.location.host+"/ws"+window.location.pathname);
-socket.onmessage = function(message){
-    let msg = JSON.parse(message.data);
-    var tmpl = [msg].map(l => `
-    <div data-id="${l.id}" class="log-line" data-level="${l.level}">
-        <span class="text date">${l.created_at}</span>&nbsp;
-        <span class="text level-${l.level}">${l.level}</span>&nbsp;
-        ${Object.keys(l.tags).map(k => `<span class="text tag">${k}=[${l.tags[k].join(" ")}]</span>`)}                    
-        <span class="text message">${l.value}</span>
-    </div>  
-    `)
-    var el = createElementFromHTML(tmpl.join(" "))
-    logView.appendChild(el[0])
-}
+    function onClose(){
+        console.log("socket closed, trying to reconnect...");
+        var socket = new WebSocket(socketUrl); 
+        socket.onmessage = onReceive;
+        socket.onclose = onClose;
+    }
+
+    var socket = new WebSocket(socketUrl);
+    socket.onmessage = onReceive;
+    socket.onclose = onClose;
 
     const logs = document.getElementById('logs');
     const not = document.querySelector("#new_logs_notification > p");
