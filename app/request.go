@@ -38,6 +38,7 @@ type Message struct {
 	Value        string     `json:"value"`
 	Level        string     `json:"level"`
 	Tags         url.Values `json:"tags"`
+	IsOlder      bool       `json:"is_older"`
 }
 
 func NewMessage(c *gin.Context) Message {

@@ -56,6 +56,22 @@
 </div>
 
 <script>
+
+var socket = new WebSocket("ws://"+window.location.host+"/ws"+window.location.pathname);
+socket.onmessage = function(message){
+    let msg = JSON.parse(message.data);
+    var tmpl = [msg].map(l => `
+    <div data-id="${l.id}" class="log-line" data-level="${l.level}">
+        <span class="text date">${l.created_at}</span>&nbsp;
+        <span class="text level-${l.level}">${l.level}</span>&nbsp;
+        ${Object.keys(l.tags).map(k => `<span class="text tag">${k}=[${l.tags[k].join(" ")}]</span>`)}                    
+        <span class="text message">${l.value}</span>
+    </div>  
+    `)
+    var el = createElementFromHTML(tmpl.join(" "))
+    logView.appendChild(el[0])
+}
+
     const logs = document.getElementById('logs');
     const not = document.querySelector("#new_logs_notification > p");
     document.getElementById("clear-button").onclick = clear;    
@@ -67,14 +83,7 @@
             menu.style.height = "0px"
         }
     }
-        
-    var count = 0;
-    function resume(){        
-        count = 0;
-        window.scrollTo(0,document.body.scrollHeight);
-        not.innerHTML = ""        
-    }
-    
+
     var logView = document.getElementById("logs")
     function clear(){        
         fetch(window.location.href, {method: 'DELETE'}).then((_ => location.reload()));
@@ -86,80 +95,13 @@
         // Change this to div.childNodes to support multiple top-level nodes
         return div.children;
     }
-    var emptyCount = 0
-    var tickTimeout = null
-    var tickStep = 300
-    const baseTimeout = 1000
-    function schedule(callback){
-        clearTimeout(tickTimeout)
-        tickTimeout = setTimeout(callback,baseTimeout + emptyCount)
-    }
-
-    function loadData(){
-        var id = 0;
-        if(logView.children.length > 0){
-            var last = logView.children[logView.children.length-1]
-            id = parseInt(last.getAttribute("data-id")) + 1;
-        }        
-        const url = window.location.protocol+"//"+window.location.host+"/json"+window.location.pathname+"?offset="+id
-        try{
-            var fetchProm = fetch(url, {method: 'GET'})
-            fetchProm.catch(x => {
-                location.reload()
-            })
-            fetchProm.then((x => {        
-            x.json().then(list =>{
-                if(list.length === 0){
-                    emptyCount += tickStep
-                    if(emptyCount > 60000){
-                        emptyCount = 60000;//max wait
-                    }
-                    setTimeout(()=>{
-                        console.log(`next tick on ${(baseTimeout+emptyCount)/1000}s`)
-                        schedule(loadData)
-                    },1)
-                    
-                    return;
-                }
-                emptyCount = 0;                                               
-                not.innerHTML = ""
-                var tmpl = list.map(l => `
-                <div data-id="${l.id}" class="log-line" data-level="${l.level}">
-                    <span class="text date">${l.created_at}</span>&nbsp;
-                    <span class="text level-${l.level}">${l.level}</span>&nbsp;
-                    ${Object.keys(l.tags).map(k => `<span class="text tag">${k}=[${l.tags[k].join(" ")}]</span>`)}                    
-                    <span class="text message">${l.value}</span>
-                </div>  
-                `)
-                var el = createElementFromHTML(tmpl.join(" "))
-                for(var i=0; i<el.length;i++){
-                    logView.appendChild(el[i])
-                }
-                
-                count += list.length;                
-                if(scrollbarVisible(logs)){
-                    not.innerHTML = count +  " new messages"
-                }else{
-                    count = 0;
-                }
-                setTimeout(()=>{                    
-                    schedule(loadData)
-                },1)
-            })
-        }))
-        }catch(e){
-            location.reload()
-        }
-        
-    }
-
+   
     function scrollbarVisible(element) {
         return element.scrollHeight > window.innerHeight;
     }
 
-    schedule(loadData)
     var filtered = {}
-    function filter(level){           
+    function filter(level){
         if(filtered[level]){
             delete filtered[level]
             //remove filter

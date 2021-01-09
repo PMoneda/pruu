@@ -10,7 +10,7 @@ var _map map[string][]app.Message
 func init() {
 	_map = make(map[string][]app.Message)
 }
-func Save(key string, c *gin.Context) {
+func Save(key string, c *gin.Context) app.Message {
 	_, exist := _map[key]
 	if !exist {
 		_map[key] = make([]app.Message, 0, 0)
@@ -18,9 +18,10 @@ func Save(key string, c *gin.Context) {
 	msg := app.NewMessage(c)
 	msg.ID = len(_map[key])
 	_map[key] = append(_map[key], msg)
-	if len(_map[key]) > 5000 {
+	if len(_map[key]) > 500 {
 		_map[key] = _map[key][1:]
 	}
+	return msg
 }
 
 func Delete(key string) {
