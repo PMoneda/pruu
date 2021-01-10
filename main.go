@@ -37,7 +37,6 @@ func distributeMessage(key string) {
 		return
 	}
 	for msg := range _channelMap[key].Channel {
-		mutex.Lock()
 		jj := _channelMap[key]
 		conns := &jj.Connections
 		for i := 0; i < len((*conns)); i++ {
@@ -51,7 +50,6 @@ func distributeMessage(key string) {
 
 			}
 		}
-		mutex.Unlock()
 	}
 
 }
@@ -135,24 +133,18 @@ func main() {
 	})
 
 	router.DELETE("/dump/:key", func(c *gin.Context) {
-		mutex.Lock()
-		defer mutex.Unlock()
 		k := c.Param("key")
 		dump.Delete(k)
 		c.String(200, "OK")
 	})
 
 	router.DELETE("/log/:key", func(c *gin.Context) {
-		mutex.Lock()
-		defer mutex.Unlock()
 		k := c.Param("key")
 		logging.Delete(k)
 		c.String(200, "OK")
 	})
 
 	router.POST("/dump/:key", func(c *gin.Context) {
-		mutex.Lock()
-		defer mutex.Unlock()
 		k := c.Param("key")
 		dump.Save(k, c)
 		c.String(200, "OK")
@@ -163,8 +155,6 @@ func main() {
 	})
 
 	router.POST("/log/:key", func(c *gin.Context) {
-		mutex.Lock()
-		defer mutex.Unlock()
 		k := c.Param("key")
 		msg := logging.Save(k, c)
 		ch, exist := _channelMap[k]
