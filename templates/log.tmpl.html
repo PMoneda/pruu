@@ -56,7 +56,7 @@
 </div>
 
 <script>
-    var socketUrl = "ws://"+window.location.host+"/ws"+window.location.pathname;
+    var socketUrl = "wss://"+window.location.host+"/ws"+window.location.pathname;
     function onReceive(message){
         let msg = JSON.parse(message.data);
         var tmpl = [msg].map(l => `
